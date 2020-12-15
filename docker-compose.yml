@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  db:
+    image: mysql:latest
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=app_db
+      - MYSQL_USER=app_user
+      - MYSQL_PASSWORD=app_pwd
+      - MYSQL_ROOT_PASSWORD=root
+  backend:
+    build: ./backend
+    image: docker.pkg.github.com/ajithpmohan/django-mysql-boilerplate/backend-dev:1.0
+    command: python manage.py runserver 0.0.0.0:7000
+    volumes:
+      - ./backend/:/usr/src/app/backend/
+    ports:
+      - "7200:7000"
+    env_file:
+      - ./backend/.env.dev
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+
+volumes:
+  mysql-data:
